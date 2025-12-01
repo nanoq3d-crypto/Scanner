@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Barcode Scanner</title>
+    <style>
+        body { font-family: Arial; text-align: center; padding: 20px; }
+        video { width: 100%; max-width: 400px; border: 2px solid #333; border-radius: 10px; }
+        #result { margin-top: 20px; font-size: 1.4rem; font-weight: bold; }
+        button { padding: 12px 20px; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+
+<h2>📦 Stock Scanner</h2>
+
+<video id="preview"></video>
+
+<div id="result">Scan something…</div>
+
+<button onclick="sendToN8N()">Send to N8N</button>
+
+<script src="https://unpkg.com/@zxing/library@latest"></script>
+<script>
+    let lastScanned = "";
+
+    const codeReader = new ZXing.BrowserMultiFormatReader();
+    codeReader.decodeFromVideoDevice(null, 'preview', (result, err) => {
+        if (result) {
+            lastScanned = result.text;
+            document.getElementById('result').innerHTML = "Scanned: " + lastScanned;
+        }
+    });
+
+    function sendToN8N() {
+        if (!lastScanned) {
+            alert("No code scanned yet");
+            return;
+        }
+
+        fetch("https://ownn8n.ksd-n8n.co.uk/webhook/scan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ SKU: lastScanned })
+        })
+        .then(res => alert("Sent to n8n!"))
+        .catch(err => alert("Error sending data"));
+    }
+</script>
+
+</body>
+</html>
