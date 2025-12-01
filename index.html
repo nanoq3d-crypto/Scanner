@@ -1,39 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Barcode Scanner</title>
+    <meta charset="UTF-8">
+    <title>KSD Stock Scanner</title>
+
     <style>
         body { font-family: Arial; text-align: center; padding: 20px; }
-        video { width: 100%; max-width: 400px; border: 2px solid #333; border-radius: 10px; }
+        video { width: 100%; max-width: 380px; border: 2px solid #444; border-radius: 12px; }
         #result { margin-top: 20px; font-size: 1.4rem; font-weight: bold; }
-        button { padding: 12px 20px; font-size: 1.2rem; }
+        button { padding: 14px 20px; font-size: 1.2rem; margin-top: 15px; }
     </style>
 </head>
 <body>
 
-<h2>📦 Stock Scanner</h2>
+<h2>📦 KSD Stock Scanner</h2>
 
 <video id="preview"></video>
 
-<div id="result">Scan something…</div>
+<div id="result">Esperando escaneo…</div>
 
-<button onclick="sendToN8N()">Send to N8N</button>
+<button onclick="sendToN8N()">📤 Enviar a n8n</button>
 
 <script src="https://unpkg.com/@zxing/library@latest"></script>
 <script>
     let lastScanned = "";
 
     const codeReader = new ZXing.BrowserMultiFormatReader();
+
+    // Iniciar cámara
     codeReader.decodeFromVideoDevice(null, 'preview', (result, err) => {
         if (result) {
             lastScanned = result.text;
-            document.getElementById('result').innerHTML = "Scanned: " + lastScanned;
+            document.getElementById('result').innerHTML = "📌 Código: " + lastScanned;
         }
     });
 
+    // Enviar a n8n
     function sendToN8N() {
         if (!lastScanned) {
-            alert("No code scanned yet");
+            alert("❌ No se ha escaneado ningún código");
             return;
         }
 
@@ -42,8 +47,8 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ SKU: lastScanned })
         })
-        .then(res => alert("Sent to n8n!"))
-        .catch(err => alert("Error sending data"));
+        .then(res => alert("✅ Enviado correctamente a n8n"))
+        .catch(err => alert("❌ Error al enviar a n8n"));
     }
 </script>
 
